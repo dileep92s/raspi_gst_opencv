@@ -1,0 +1,42 @@
+Author : Dileep S 
+E-mail : dileep92s@gmail.com
+
+This document contains the command & python template code for getting video stream from raspberry pi to your PC.
+I am using raspberry pi 2 with pi-camera module (v1) as hardware. My pi2 is running Raspbian OS.
+After OS installation on pi, run
+sudo apt-get update
+sudo apt-get upgrade
+sudo raspi-config
+
+you will get a window with options, goto interfaces option -> camera and enable it
+after reboot you will get a new tools called raspivid
+
+just type:
+raspivid -t 0
+
+to get video preview on yor raspberry pi screen
+
+
+on raspberry pi execute following command, you are free to modify settings in raspivid part
+
+raspivid -t 0 -h 480 -w 720 -fps 25 -b 2000000 -rot 270 -o - | gst-launch-1.0 fdsrc ! h264parse ! decodebin ! videoconvert ! video/x-raw,format=I420 ! jpegenc ! rtpjpegpay ! udpsink host=<YOUR_PC_IP_HERE> port=5000
+
+
+following code reads the frames and displays on a window
+now that we are able to receive the image as np.array, we can go ahead and implement our image processing operations in this template
+
+
+import numpy as np
+import cv2
+
+cap = cv2.VideoCapture(r"rtp://127.0.0.1:5000")
+
+while True:
+	ret,frame = cap.read()
+	cv2.imshow("result", frame)
+	if cv2.waitKey(1) & 0xFF == ord('q'):
+		break
+
+		##########
+		DOC INCOMPLETE
+		##########
